@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Электронный Тасбих</title>
+  <meta name="theme-color" content="#061f12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div id="app">
+    <header>
+      <button class="btn btn-gold" id="btnMyTasbihs">📚 Мои Тасбихи</button>
+      <button class="btn" id="btnHistory">📊 История</button>
+      <div class="top-tools">
+        <button class="btn" id="btnCreateSingleOpen" title="Создать зикр">➕ Зикр</button>
+        <button class="btn" id="btnFullscreen" title="На весь экран">⤢</button>
+        <button class="btn" id="btnSound">🔊</button>
+        <button class="btn btn-gold" id="btnVibro">📳</button>
+      </div>
+    </header>
+
+    <main id="mainClickArea">
+      <div class="info-bar">
+        <span id="currentTitle">Свободный счет</span>
+        <span id="todayCount">⚡ Сегодня: 0</span>
+      </div>
+
+      <div class="counter-container">
+        <div class="counter-circle" id="circle">
+          <div class="counter-value" id="countVal">0</div>
+          <div class="counter-target" id="targetVal">Цель: Безлимит</div>
+          <div class="multi-step-info" id="multiStepInfo"></div>
+        </div>
+      </div>
+
+      <div class="tap-hint">Нажмите в любом месте</div>
+
+      <div class="bottom-controls">
+        <button class="btn" id="btnResetCurrent" title="Сбросить текущий круг">↺ Сброс</button>
+        <button class="btn btn-danger" id="btnResetFull" title="Сбросить всё со статистикой">💥 Сбросить всё</button>
+        <button class="btn btn-gold" id="btnChangeTarget">🎯 Цель</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Модалка предупреждения сброса -->
+  <div class="modal-overlay" id="modalReset">
+    <div class="modal-card">
+      <div class="modal-title" id="resetTitle">Сбросить счетчик?</div>
+      <div class="modal-text" id="resetText">Вы действительно хотите сбросить прогресс?</div>
+      <div class="modal-actions">
+        <button class="modal-btn btn-cancel" id="btnResetCancel">Отмена</button>
+        <button class="modal-btn btn-danger" id="btnResetConfirm">Сбросить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модалка "Мои тасбихи" -->
+  <div class="modal-overlay" id="modalList">
+    <div class="modal-card">
+      <div class="modal-title">Мои Тасбихи</div>
+      <div id="tasbihList" class="tasbih-list"></div>
+      
+      <!-- Создание Мульти-тасбиха -->
+      <div class="multi-form">
+        <div class="multi-form-title">Создать цепочку (Мульти-тасбих):</div>
+        <input type="text" id="multiTitle" placeholder="Название цепочки (напр. После намаза)">
+        
+        <div id="chainContainer">
+          <div class="chain-step">
+            <input type="text" placeholder="Зикр (напр. Астагфируллах)" class="step-name">
+            <input type="number" placeholder="Кол-во" class="step-target" min="1" step="1">
+            <button class="btn btn-danger remove-chain-step" type="button">✖</button>
+          </div>
+          <div class="chain-step">
+            <input type="text" placeholder="Зикр (напр. Субханаллах)" class="step-name">
+            <input type="number" placeholder="Кол-во" class="step-target" min="1" step="1">
+            <button class="btn btn-danger remove-chain-step" type="button">✖</button>
+          </div>
+        </div>
+
+        <button class="btn add-chain-step" id="btnAddStep" type="button">+ Добавить еще шаг</button>
+        <button class="modal-btn btn-primary create-multi" id="btnCreateMulti" type="button">Создать цепочку</button>
+      </div>
+
+      <button class="modal-btn btn-cancel" id="btnCloseList">Закрыть</button>
+    </div>
+  </div>
+
+  <section class="single-page" id="singlePage" aria-labelledby="singlePageTitle" aria-hidden="true">
+    <div class="single-page-header">
+      <button class="btn" id="btnCloseSinglePage" type="button">← Назад</button>
+    </div>
+    <div class="single-page-content">
+      <div class="single-page-kicker">Личная практика</div>
+      <h1 class="single-page-title" id="singlePageTitle">Создать зикр</h1>
+      <p class="single-page-description">Напишите один зикр. Он станет названием вашего тасбиха и будет доступен в списке «Мои Тасбихи».</p>
+      <form class="single-form" id="singleZikrForm">
+        <label for="singleZikrText">Текст зикра</label>
+        <input type="text" id="singleZikrText" placeholder="Например: Субханаллах" autocomplete="off" required>
+        <label for="singleZikrTarget">Цель (необязательно)</label>
+        <input type="number" id="singleZikrTarget" placeholder="0 — безлимит" min="0" inputmode="numeric">
+        <div class="single-form-hint">Цель можно оставить пустой или указать 0 для счета без ограничения.</div>
+        <div class="single-form-actions">
+          <button class="modal-btn btn-cancel" id="btnCancelSinglePage" type="button">Отмена</button>
+          <button class="modal-btn single-submit" type="submit">Создать зикр</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Модалка "История и статистика" -->
+  <div class="modal-overlay" id="modalHistory">
+    <div class="modal-card">
+      <div class="modal-title">📊 История и Статистика</div>
+      
+      <div class="total-card">
+        <div class="total-label">Всего начитано за всё время</div>
+        <div class="total-value" id="totalAllTime">0</div>
+      </div>
+
+      <div class="history-title">История по дням:</div>
+      <div id="historyList" class="history-list"></div>
+
+      <button class="modal-btn btn-cancel" id="btnCloseHistory">Закрыть</button>
+    </div>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
